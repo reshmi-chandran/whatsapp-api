@@ -1,22 +1,22 @@
 # Phase 1 Architecture & Delivery Plan — WhatsApp AI Assistant MVP
 
-This document frames the Phase 1 MVP: a pragmatic WhatsApp → AI → backend flow with basic admin controls. It is intentionally lean—enough structure to validate value quickly, without over-engineering.
+This document frames the Phase 1 MVP: a pragmatic WhatsApp → AI → backend flow with basic admin controls. It is intentionally lean—enough structure to validate value quickly, without over-engineering. Backend is standardized on **Node.js with Express** for delivery speed and ecosystem fit.
 
 ## 1) Goals & Scope (Phase 1 / MVP)
 - Prove the end-to-end path: WhatsApp inbound → AI understanding → ticket logic → admin visibility.
-- Keep the backend simple (Node.js or Python) while integrating the WhatsApp Business Cloud API.
+- Keep the backend simple (Node.js with Express) while integrating the WhatsApp Business Cloud API.
 - Use an LLM (OpenAI or similar) for language detection, intent classification, and structured data extraction.
 - Persist conversations and tickets, including emergency-handling rules, and expose a minimal admin surface for listing, detail, and exports.
 - Deliver code, demo videos per milestone, and a checklist-driven validation.
 
 ## 2) Architecture Overview
-The system uses WhatsApp as the single user channel, a lightweight backend to orchestrate AI calls and ticket logic, and a relational database to anchor state. An admin UI consumes the same APIs used by the core flow.
+The system uses WhatsApp as the single user channel, a lightweight Node/Express backend to orchestrate AI calls and ticket logic, and PostgreSQL to anchor state. An admin UI consumes the same APIs used by the core flow.
 
 - **Client channel:** WhatsApp Business Cloud API for inbound webhooks and outbound sends.
 - **Ingress & routing:** HTTPS webhook endpoint that verifies signatures and normalizes messages.
 - **LLM services:** OpenAI (or equivalent) via a thin gateway for language detect, classify, and extract.
-- **Backend/API:** REST (or lean GraphQL) service managing sessions, orchestration, ticket lifecycle, and admin endpoints.
-- **Database:** Relational store (PostgreSQL or MySQL) for conversations, tickets, users/admins, and audit events; Redis optional for short-lived cache/idempotency.
+- **Backend/API:** REST (or lean GraphQL) service on Express managing sessions, orchestration, ticket lifecycle, and admin endpoints.
+- **Database:** PostgreSQL for conversations, tickets, users/admins, and audit events; Redis optional for short-lived cache/idempotency.
 - **Admin UI:** Minimal web UI for tickets (list/detail), basic actions, and exports.
 - **Observability:** Structured logs, error tracking hook, and audit trails on messages/tickets.
 
@@ -28,7 +28,7 @@ WhatsApp User
 WhatsApp Business Cloud API (webhook → verify → normalize)
     │
     ▼
-Backend Service (Node.js/Python)
+Backend Service (Node.js/Express)
     ├─ Ingress Controller (auth, signature verify, rate limits)
     ├─ Message Orchestrator
     │    ├─ LLM Gateway (OpenAI or equivalent)
@@ -60,8 +60,8 @@ Database (conversations, tickets, audit, admin users)
 - **Observability:** Correlation IDs in logs, minimal error tracking, health/readiness endpoints.
 
 ## 5) Technology Choices (pragmatic defaults)
-- **Backend:** Node.js (Express/Fastify) or Python (FastAPI) — whichever the team can ship fastest.
-- **Database:** PostgreSQL preferred; migrations via Prisma/Knex (Node) or Alembic (Python).
+- **Backend:** Node.js with Express (chosen for speed and ecosystem).
+- **Database:** PostgreSQL with migrations via Prisma or Knex.
 - **Cache (optional):** Redis for idempotency keys and short-lived session context.
 - **LLM:** OpenAI GPT-4/GPT-4o or similar, behind an abstraction to allow provider swaps.
 - **Admin UI:** Lightweight React/Vite or server-rendered pages; minimal components to satisfy the checklist.
