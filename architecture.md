@@ -16,9 +16,9 @@ The system uses WhatsApp as the single user channel, a lightweight Node/Express 
 - **Ingress & routing:** HTTPS webhook endpoint that verifies signatures and normalizes messages.
 - **LLM services:** OpenAI (or equivalent) via a thin gateway for language detect, classify, and extract.
 - **Backend/API:** REST (or lean GraphQL) service on Express managing sessions, orchestration, ticket lifecycle, and admin endpoints.
-- **Database:** PostgreSQL for conversations, tickets, users/admins, and audit events; Redis optional for short-lived cache/idempotency.
+- **Database:** PostgreSQL for conversations, tickets, users/admins, and audit events.
 - **Admin UI:** Minimal web UI for tickets (list/detail), basic actions, and exports.
-- **Observability:** Structured logs, error tracking hook, and audit trails on messages/tickets.
+- **Observability:** Basic structured logs and ticket/message audit trails.
 
 ### Text Diagram (logical view)
 ```
@@ -57,15 +57,14 @@ Database (conversations, tickets, audit, admin users)
 - **Ticket Engine:** Manages ticket lifecycle, deduplication, emergency/escalation rules, and audit logging.
 - **Persistence:** Relational schema for users, conversations, messages, tickets, events, and admins with indexes for fast lookups.
 - **Admin API + UI:** Basic auth, ticket list/detail, status changes, notes, and CSV/JSON exports.
-- **Observability:** Correlation IDs in logs, minimal error tracking, health/readiness endpoints.
+- **Observability:** Correlation IDs in logs and a simple health endpoint.
 
 ## 5) Technology Choices (pragmatic defaults)
 - **Backend:** Node.js with Express (chosen for speed and ecosystem).
 - **Database:** PostgreSQL with migrations via Prisma or Knex.
-- **Cache (optional):** Redis for idempotency keys and short-lived session context.
 - **LLM:** OpenAI GPT-4/GPT-4o or similar, behind an abstraction to allow provider swaps.
 - **Admin UI:** Lightweight React/Vite or server-rendered pages; minimal components to satisfy the checklist.
-- **Infra:** Single container/VM for MVP; HTTPS terminated via managed cert; env-var based secrets (vault-ready later).
+- **Infra:** Single container/VM for MVP; HTTPS terminated via managed cert; env-var based secrets.
 
 ## 6) Milestones, Deliverables, and Demos (fixed scope)
 **Milestone 1 — Ingress & Core Flow**  
@@ -84,11 +83,6 @@ Database (conversations, tickets, audit, admin users)
 - Admin auth (basic), ticket list/detail, status updates, notes, exports (CSV/JSON).  
 - Ticket audit trail visible.  
 - Demo video + validation checklist.
-
-**Milestone 4 — Hardening & Handover**  
-- Observability (structured logs, basic error tracking), health checks.  
-- Edge cases: media placeholders, retry safety, fallback when LLM is down.  
-- Source handover, config/env guide, and final walkthrough video.  
 
 ## 7) Validation Checklist (per milestone)
 - WhatsApp webhook verified; messages round-trip with expected text.  
